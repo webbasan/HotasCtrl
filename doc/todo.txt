@@ -1,0 +1,50 @@
+"Roadmap" - sort of...
+======================
+
+M1: Java Command Line Application for the X52[pro]
+  - Goals:
+    - "Get to know the territory"
+    - Having tool to initially setup or change occasionally LED/Display settings
+    - Initial setup of relevant project infrastructure: dependencies, build deploy, distribute
+  - Steps:
+    - Argument parsing and validation
+    - HID discovery and initialization
+    - translation to low-level commands
+    - proper "Mavenization": dependency-management, testing, product: executable jar
+    - Check back with author of "Saitek" class
+    - Project Setup on Github
+    - Distribution: Binary on Github? Dropbox?
+
+M2: "Daemon" mode (still Java based)
+  - Goals:
+    => Reduce latency when changing details
+    => Allow callback from applications to change setup
+    - Configuration files: different "Profiles", i.e. Application specific
+    - IPC - How?:
+      - ControllerMate can make HTTP-Requests
+        => REST-like API (although "GET" based...),
+           simple HTTP handling would be enough, no need for Servlet-Container
+      - How does X-Plane handle it?
+        (There is a similar App for X-Plane, but it interferes with the normal stick
+         operation -- too much communication?)
+      - Test: how much is too much? When does the stick get "hogged"?
+      - What use for Oolite? FreeSpaceSCP?
+
+M3: "Native" Command Line Application
+  - Java has not enough friends...
+  - Reduced latency
+  - Potential "back-end" for PrefPane...
+  - Evaluate "cross-platform" capability (=> USBlib?)
+
+M4: PrefPane
+  - Nice UI to setup the stick
+  - "Profile"-Management
+  - Start/Stop Daemon
+
+M5: "Native" Daemon
+  - Java not a requirement anymore
+  - Evaluate suitability of other IPC approaches:
+    - OS X: AppleScript Host?
+      -> fitness compared to simple HTTP based approach?
+    - StdIO
+    - Named Pipe? Local Socket?
