@@ -58,10 +58,10 @@ order of the appearance. Keywords and parameters are case-insensitive.
 
 ## Thanks, Acknowledgments:
 
-The included SaitekX52pro class was created and posted by user "atcurtis" 
-in the "Mac Elite: Dangerous" forum. It helped me to get started, because he 
-already sorted the low-level stuff of the Saitek SDK out and the code pointed
-me to the USB4Java library.
+The included SaitekX52pro class was created and "thrown over the wall" 
+by Antony T. Curtis in the "Mac Elite: Dangerous" forum. 
+It helped me to get started, because he already sorted the low-level stuff 
+of the Saitek SDK out and the code pointed me to the USB4Java library.
 
 It will may be replaced with something that fits better into the architecture,
 but that has currently no high priority for me.
