@@ -52,11 +52,18 @@ public final class ArgHandlerLight
     @Override
     protected void parse(final String... values) {
         this.lightSource = Parameter.LightSource.valueOf(values[0].toUpperCase());
-        Parameter.Brightness brightness = Parameter.Brightness.valueOf(values[1].toUpperCase());
-        if (brightness != null) {
-            this.brightness = brightness.value;
+
+        Parameter.Brightness brightness = null;
+
+        String brightnessValue = values[1].toUpperCase();
+        for (Parameter.Brightness namedBrightness : Parameter.Brightness.values()) {
+            if (namedBrightness.name().equals(brightnessValue)) {
+                brightness = namedBrightness;
+                this.brightness = brightness.value;
+            }
         }
-        else {
+
+        if (brightness == null) {
             try {
                 this.brightness = Integer.parseInt(values[1]);
             }
