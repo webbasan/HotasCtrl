@@ -6,16 +6,12 @@ M1: Java Command Line Application for the X52[pro]
     - "Get to know the territory"
     - Having tool to initially setup or change occasionally LED/Display settings
     - Initial setup of relevant project infrastructure: dependencies, build deploy, distribute
-  - Steps:
-    - Argument parsing and validation
-    - HID discovery and initialization
-    - translation to low-level commands
-    - proper "Mavenization": dependency-management, testing, product: executable jar
-    - Check back with author of "Saitek" class
-    - Project Setup on Github
-    - Distribution: Binary on Github? Dropbox?
 
 M2: "Daemon" mode (still Java based)
+  - Missing Features:
+    - "Marquee Effect" for long text?
+    - "Date/Time" display: Host side update or missing "start trigger" on device side?
+    - How to use countdown/stopwatch?
   - Goals:
     => Reduce latency when changing details
     => Allow callback from applications to change setup
