@@ -21,6 +21,20 @@ public class HotasMockImpl
         System.out.println("HOTAS initialized.");
     }
 
+    @Override
+    public void enableDaemon() {
+        // TODO: create UpdaterTask
+        // TODO: -> UpdaterTask handles UpdateJobs
+        // TODO: -> UpdateJob is ( ClockUpdate | TextScrollUpdate | CountDownUpdate | WaitForDevice | ContinueTask )
+        // TODO: run UpdaterTask
+    }
+
+    @Override
+    public void disableDaemon() {
+        // TODO: shutdown UpdaterTask
+        // TODO: -> ContinueTask := NO
+    }
+
     public void setBrightness(Parameter.LightSource lightSource, Parameter.Brightness brightness) {
         setBrightness(lightSource, brightness.value);
     }

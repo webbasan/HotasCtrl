@@ -10,6 +10,10 @@ public interface Hotas {
 
     void init();
 
+    void enableDaemon();
+
+    void disableDaemon();
+
     void setBrightness(Parameter.LightSource lightSource, Parameter.Brightness brightness);
 
     void setBrightness(Parameter.LightSource lightSource, int brightnessValue);

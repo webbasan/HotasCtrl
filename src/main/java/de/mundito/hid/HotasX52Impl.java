@@ -26,6 +26,16 @@ public class HotasX52Impl
     }
 
     @Override
+    public void enableDaemon() {
+        // TODO: implement method.
+    }
+
+    @Override
+    public void disableDaemon() {
+        // TODO: implement method.
+    }
+
+    @Override
     public void setBrightness(final Parameter.LightSource lightSource, final Parameter.Brightness brightness) {
         setBrightness(lightSource, brightness.value);
     }

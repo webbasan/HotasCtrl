@@ -123,24 +123,7 @@ public class SaitekX52Pro
      */
     public static synchronized SaitekX52Pro init()
     {
-
-        if (context == null)
-        {
-            context = new Context();
-            Thread shutdownHook = new Thread(new Runnable()
-            {
-                public void run()
-                {
-                    LibUsb.exit(context);
-                }
-            }, "libusb shutdown");
-
-            int result = LibUsb.init(context);
-            if (result != LibUsb.SUCCESS)
-                throw new LibUsbException("Unable to initalize libusb.",
-                        result);
-            Runtime.getRuntime().addShutdownHook(shutdownHook);
-        }
+        initContext();
 
         SaitekX52Pro x52 = new SaitekX52Pro();
 
@@ -189,6 +172,61 @@ public class SaitekX52Pro
             LibUsb.freeDeviceList(list, true);
         }
         return null;
+    }
+
+    public static synchronized boolean isAvailableProductX52() {
+        initContext();
+
+        boolean foundSupportedDevice = false;
+        DeviceList list = new DeviceList();
+        int r = LibUsb.getDeviceList(context, list);
+        if (r < 0) {
+            throw new LibUsbException("Unable to get device list", r);
+        }
+        try {
+            for (Device device : list) {
+                DeviceDescriptor desc = new DeviceDescriptor();
+                r = LibUsb.getDeviceDescriptor(device, desc);
+                if (r < 0) {
+                    throw new LibUsbException("Unable to read device descriptor", r);
+                }
+                if (desc.idVendor() != VENDOR_SAITEK) {
+                    continue;
+                }
+                switch (desc.idProduct()) {
+                    case PRODUCT_X52_0:
+                    case PRODUCT_X52_1:
+                    case PRODUCT_X52PRO:
+                        foundSupportedDevice = true;
+                        break;
+                }
+            }
+        }
+        finally {
+            LibUsb.freeDeviceList(list, true);
+        }
+
+        // TODO: check - may be use hotplugRegisterCallback() ?
+
+        return foundSupportedDevice;
+    }
+
+    private static void initContext() {
+        if (context == null) {
+            context = new Context();
+            Thread shutdownHook = new Thread(
+                    new Runnable() {
+                        public void run() {
+                            LibUsb.exit(context);
+                        }
+                    }, "libusb shutdown");
+
+            int result = LibUsb.init(context);
+            if (result != LibUsb.SUCCESS) {
+                throw new LibUsbException("Unable to initalize libusb.", result);
+            }
+            Runtime.getRuntime().addShutdownHook(shutdownHook);
+        }
     }
 
     /**
