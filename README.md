@@ -18,30 +18,30 @@ order of the appearance. Keywords and parameters are case-insensitive.
 ## Valid Arguments:
 
 - light:
-    - parameters: <type> <brightness level>
+    - parameters: &lt;type> &lt;brightness level>
     - where type is on of: mfd, led, all
-    - and brightness level is either a numerical between 0 and 127
-      
-      or a named value: off, dark, half, full, on (same as "full")
+    - and brightness level is either 
+        - a numerical value between 0 and 127
+        - or a named value: off, dark, half, full, on (same as "full")
 
 - led:
-    - parameters: <LED name> <color>
+    - parameters: &lt;LED name> &lt;color>
     - where LED name is on of: A, B, D, E, I, T1, T2, T3, POV, FIRE, THROTTLE, ALL
     - and color is on of: red, amber, green, off, on (same as "green")
     
       _**NOTE:** useful values for FIRE and THROTTLE are only "on" and "off"._
 
 - line1,line2,line3:
-    - parameters: "<some text>"
+    - parameters: "&lt;some text>"
     
       _**NOTE:** the display can only show up to 16 characters per line,
         the text will be clipped after the 16th character.
-        Automatic scrolling is not supported._
+        Automatic scrolling is (currently) not supported._
 
 - text:
-    - parameters: "<some text\nwith multiple\nlines>"
+    - parameters: "&lt;some text\nwith multiple\nlines>"
     
-      This allows to set multiple lines of text with in one argument.
+      This allows to set multiple lines of text with one argument.
       The lines should be separated by the character sequence "\n".
 
 
