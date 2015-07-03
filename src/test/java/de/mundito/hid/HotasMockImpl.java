@@ -17,6 +17,11 @@ public class HotasMockImpl
     }
 
 
+    @Override
+    public boolean isAvailable() {
+        return false;  // TODO: implement method.
+    }
+
     public void init() {
         System.out.println("HOTAS initialized.");
     }

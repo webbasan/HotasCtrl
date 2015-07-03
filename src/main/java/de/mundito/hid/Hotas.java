@@ -8,6 +8,8 @@ import de.mundito.args.Parameter;
  */
 public interface Hotas {
 
+    boolean isAvailable();
+
     void init();
 
     void enableDaemon();
