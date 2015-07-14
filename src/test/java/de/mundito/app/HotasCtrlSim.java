@@ -5,7 +5,7 @@ import de.mundito.args.ArgHandlerRegistry;
 import de.mundito.args.Parameter;
 import de.mundito.configuration.Configuration;
 import de.mundito.hid.Hotas;
-import de.mundito.hid.HotasMockImpl;
+import de.mundito.hid.HotasMock;
 import de.mundito.hid.SetupHandler;
 import de.mundito.hid.SetupHandlerRegistry;
 
@@ -23,7 +23,7 @@ public class HotasCtrlSim {
     }
 
     public void init() {
-        this.hotas = new HotasMockImpl();
+        this.hotas = new HotasMock();
         this.hotas.init();
     }
 

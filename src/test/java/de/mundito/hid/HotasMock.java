@@ -2,42 +2,26 @@ package de.mundito.hid;
 
 import de.mundito.args.Parameter;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 
 /**
  * User: webbasan Date: 05.05.15 Time: 20:19
  */
-public class HotasMockImpl
+public class HotasMock
         implements Hotas
 {
 
     private final ParameterMappings parameterMappings;
 
-    public HotasMockImpl() {
+    public HotasMock() {
         this.parameterMappings = new ParameterMappings();
     }
 
 
-    @Override
-    public boolean isAvailable() {
-        return false;  // TODO: implement method.
-    }
-
     public void init() {
         System.out.println("HOTAS initialized.");
-    }
-
-    @Override
-    public void enableDaemon() {
-        // TODO: create UpdaterTask
-        // TODO: -> UpdaterTask handles UpdateJobs
-        // TODO: -> UpdateJob is ( ClockUpdate | TextScrollUpdate | CountDownUpdate | WaitForDevice | ContinueTask )
-        // TODO: run UpdaterTask
-    }
-
-    @Override
-    public void disableDaemon() {
-        // TODO: shutdown UpdaterTask
-        // TODO: -> ContinueTask := NO
     }
 
     public void setBrightness(Parameter.LightSource lightSource, Parameter.Brightness brightness) {
@@ -59,6 +43,11 @@ public class HotasMockImpl
 
     public void setText(int lineNum, String text) {
         System.out.println("Set line " + lineNum + ": " + text);
+    }
+
+    @Override
+    public void setCurrentLocalDate(final boolean enable24H) {
+        System.out.println("Set date to " + DateFormat.getDateInstance().format(new Date()));
     }
 
     public void shutdown() {

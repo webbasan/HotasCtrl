@@ -20,6 +20,7 @@ public final class SetupHandlerRegistry {
         HANDLERS_BY_PARAMETER.put(SetupTextLine2.PARAMETER, new SetupTextLine2());
         HANDLERS_BY_PARAMETER.put(SetupTextLine3.PARAMETER, new SetupTextLine3());
         HANDLERS_BY_PARAMETER.put(SetupTextLines.PARAMETER, new SetupTextLines());
+        HANDLERS_BY_PARAMETER.put(SetupClock.PARAMETER, new SetupClock());
     }
 
     private SetupHandlerRegistry() {

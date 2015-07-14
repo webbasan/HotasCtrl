@@ -2,18 +2,16 @@ package de.mundito.args;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 /**
  * User: webbasan Date: 23.04.15 Time: 22:27
  */
 public final class ArgHandlerRegistry {
-    private static final Map<Parameter, ArgHandler.Factory> FACTORIES = new HashMap<Parameter, ArgHandler.Factory>();
+    private static final Map<Parameter, ArgHandler.Factory> FACTORIES = new HashMap<>();
 
     static {
         addFactory(ArgHandlerLight.FACTORY);
@@ -22,6 +20,8 @@ public final class ArgHandlerRegistry {
         addFactory(ArgHandlerLine2.FACTORY);
         addFactory(ArgHandlerLine3.FACTORY);
         addFactory(ArgHandlerText.FACTORY);
+        addFactory(ArgHandlerClock.FACTORY);
+        addFactory(ArgHandlerDaemon.FACTORY);
     }
 
     private ArgHandlerRegistry() {

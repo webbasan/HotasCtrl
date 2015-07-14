@@ -8,13 +8,7 @@ import de.mundito.args.Parameter;
  */
 public interface Hotas {
 
-    boolean isAvailable();
-
     void init();
-
-    void enableDaemon();
-
-    void disableDaemon();
 
     void setBrightness(Parameter.LightSource lightSource, Parameter.Brightness brightness);
 
@@ -23,6 +17,8 @@ public interface Hotas {
     void setLedColor(Parameter.Led led, Parameter.LedColor color);
 
     void setText(int lineNum, String text);
+
+    void setCurrentLocalDate(boolean enable24H);
 
     void shutdown();
 

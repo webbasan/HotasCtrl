@@ -5,9 +5,13 @@ import de.mundito.args.ArgHandlerRegistry;
 import de.mundito.args.Parameter;
 import de.mundito.configuration.Configuration;
 import de.mundito.hid.Hotas;
-import de.mundito.hid.HotasX52Impl;
 import de.mundito.hid.SetupHandler;
 import de.mundito.hid.SetupHandlerRegistry;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
 
 
 /**
@@ -24,7 +28,7 @@ public final class HotasCtrl {
     }
 
     public void init() {
-        this.hotas = new HotasX52Impl();
+        this.hotas = this.configuration.createHotas();
         this.hotas.init();
     }
 
@@ -37,6 +41,50 @@ public final class HotasCtrl {
             else {
                 // FIXME: complain - don't know how to handle arg!
             }
+        }
+
+        // do something different while hotas does what it has to do:
+        // - if in foreground: open input stream, waiting to get new configuration commands
+        // TODO: - if in background: wait until daemon thread dies...
+        // TODO: - open socket: expect to receive HTTP GET requests -> mapped to configuration commands
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            while (true) {
+                String input = reader.readLine();
+                if (input == null) {
+                    break;
+                }
+                else if (input.equals("")) {
+                    continue;
+                }
+
+                input = input.toLowerCase();
+                if (input.startsWith("quit") || input.startsWith("exit")) {
+                    break;
+                }
+                else if (input.startsWith("help")) {
+                    printUsage();
+                }
+                else {
+                    try {
+                        List<ArgHandler> argHandlers = ArgHandlerRegistry.readArgs(input.split(" "));
+                        for (ArgHandler argHandler : argHandlers) {
+                            if (argHandler.isValid()) {
+                                SetupHandler setupHandler = SetupHandlerRegistry.getHandler(argHandler.getParameter());
+                                if (setupHandler != null) {
+                                    setupHandler.setup(this.hotas, argHandler);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e) {
+                        System.out.println("Unable to handle '" + input + "': " + e);
+                    }
+                }
+            }
+        }
+        catch (IOException e) {
+            System.out.println("Error while reading input: " + e);
         }
     }
 

@@ -2,11 +2,14 @@ package de.mundito.hid;
 
 import de.mundito.args.Parameter;
 
+import java.text.DateFormat;
+import java.util.Calendar;
+
 
 /**
  * User: webbasan Date: 08.05.15 Time: 22:17
  */
-public class HotasX52Impl
+public class HotasX52Simple
         implements Hotas
 {
 
@@ -14,16 +17,11 @@ public class HotasX52Impl
 
     private SaitekX52Pro device;
 
-    public HotasX52Impl() {
+    public HotasX52Simple() {
         this.parameterMappings = new ParameterMappings();
         this.device = null;
     }
 
-
-    @Override
-    public boolean isAvailable() {
-        return SaitekX52Pro.isAvailableProductX52();
-    }
 
     @Override
     public void init() {
@@ -31,70 +29,54 @@ public class HotasX52Impl
     }
 
     @Override
-    public void enableDaemon() {
-        // TODO: implement method.
-    }
-
-    @Override
-    public void disableDaemon() {
-        // TODO: implement method.
-    }
-
-    @Override
     public void setBrightness(final Parameter.LightSource lightSource, final Parameter.Brightness brightness) {
-        setBrightness(lightSource, brightness.value);
+        if (isSupportedDevice()) {
+            setBrightness(lightSource, brightness.value);
+        }
     }
 
     @Override
     public void setBrightness(final Parameter.LightSource lightSource, final int brightnessValue) {
-        if (isAvailable()) {
-            if (isSupportedDevice()) {
-                for (InternalValues.LightSource internalValue : this.parameterMappings.getLightSourceMappings(lightSource)) {
-                    setBrightness(internalValue, brightnessValue);
-                }
+        if (isSupportedDevice()) {
+            for (InternalValues.LightSource internalValue : this.parameterMappings.getLightSourceMappings(lightSource)) {
+                setBrightness(internalValue, brightnessValue);
             }
-        }
-        else if (isDeferredUpdateEnabled()) {
-            // TODO: add UpdateJob
         }
     }
 
     @Override
     public void setLedColor(final Parameter.Led led, final Parameter.LedColor color) {
-        if (isAvailable()) {
-            if (isSupportedDevice() && isLedSupported()) {
-                for (InternalValues.Led internalValue : this.parameterMappings.getLedMappings(led)) {
-                    InternalValues.LedColor ledColor = this.parameterMappings.getLedColorMappings(color);
-                    setLedColor(internalValue, ledColor);
-                }
+        if (isSupportedDevice() && isLedSupported()) {
+            for (InternalValues.Led internalValue : this.parameterMappings.getLedMappings(led)) {
+                InternalValues.LedColor ledColor = this.parameterMappings.getLedColorMappings(color);
+                setLedColor(internalValue, ledColor);
             }
-        }
-        else if (isDeferredUpdateEnabled()) {
-            // TODO: add UpdateJob
         }
     }
 
     @Override
     public void setText(final int lineNum, final String text) {
-        if (isAvailable()) {
-            if (isSupportedDevice()) {
-                System.out.println("Set line " + lineNum + ": " + text);
-                this.device.setText(lineNum, text);
-            }
+        if (isSupportedDevice()) {
+            System.out.println("Set line " + lineNum + ": " + text);
+            this.device.setText(lineNum, text);
         }
-        else if (isDeferredUpdateEnabled()) {
-            // TODO: add UpdateJob
+    }
+
+    @Override
+    public void setCurrentLocalDate(final boolean enable24H) {
+        if (isSupportedDevice()) {
+            Calendar currentDateTime = Calendar.getInstance();
+            System.out.println("Set date to " + DateFormat.getDateInstance().format(currentDateTime.getTime()));
+            this.device.setDateTime(currentDateTime, enable24H);
         }
     }
 
     @Override
     public void shutdown() {
-        this.device.close();
-    }
-
-    private boolean isDeferredUpdateEnabled() {
-        // TODO: check if UpdaterTask is available
-        return false;
+        if (this.device != null) {
+            this.device.close();
+            this.device = null;
+        }
     }
 
     private boolean isSupportedDevice() {

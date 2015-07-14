@@ -1,6 +1,9 @@
 package de.mundito.configuration;
 
 import de.mundito.args.ArgHandler;
+import de.mundito.hid.Hotas;
+import de.mundito.hid.HotasX52Daemon;
+import de.mundito.hid.HotasX52Simple;
 
 import java.util.Collections;
 import java.util.List;
@@ -45,5 +48,26 @@ public class Configuration {
             }
         }
         return result.toString();
+    }
+
+    public Hotas createHotas() {
+        // choose suitable Hotas implementation based on command arguments
+        if (shouldEnableDaemonMode()) {
+            return new HotasX52Daemon();
+        }
+        else {
+            return new HotasX52Simple();
+        }
+    }
+
+    private boolean shouldEnableDaemonMode() {
+        boolean enableDaemonMode = false;
+        for (ArgHandler argHandler : this.argHandlers) {
+            enableDaemonMode = argHandler.getParameter().enableDaemonMode();
+            if (enableDaemonMode) {
+                break;
+            }
+        }
+        return enableDaemonMode;
     }
 }

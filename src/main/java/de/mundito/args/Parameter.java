@@ -5,14 +5,15 @@ package de.mundito.args;
  */
 public enum Parameter {
     LIGHT("(" + LightSource.getValidValueDescription() + ") "
-            + "((0..127)|" + Brightness.getValidValueDescription() + ")", 2),
+            + "((0..127)|" + Brightness.getValidValueDescription() + ")", 2, false),
     LED("(" + Led.getValidValueDescription() + ") "
-            + "(" + LedColor.getValidValueDescription() + ")", 2),
-    TEXT("<text for line 1>\\n<text for line 2>\\n<text for line 3>", 1),
-    LINE1("<text for line 1>", 1),
-    LINE2("<text for line 2>", 1),
-    LINE3("<text for line 3>", 1),
-    DATE("...", 1);
+            + "(" + LedColor.getValidValueDescription() + ")", 2, false),
+    TEXT("<text for line 1>\\n<text for line 2>\\n<text for line 3>", 1, false),
+    LINE1("<text for line 1>", 1, false),
+    LINE2("<text for line 2>", 1, false),
+    LINE3("<text for line 3>", 1, false),
+    CLOCK("(" + ClockVariant.getValidValueDescription() + ")", 1, true),
+    DAEMON("", 0, true);
 
     public interface Sub {}
 
@@ -94,13 +95,31 @@ public enum Parameter {
         }
     }
 
+    public enum ClockVariant implements Sub {
+        LOCAL_24H, LOCAL_12H;
+
+        public static String getValidValueDescription() {
+            String validValues = null;
+            for (ClockVariant variant : ClockVariant.values()) {
+                if (validValues == null) {
+                    validValues = variant.toString().toLowerCase();
+                }
+                else {
+                    validValues += "|" + variant.toString().toLowerCase();
+                }
+            }
+            return validValues;
+        }
+    }
 
     private final String description;
     private final int numArgs;
+    private final boolean enableDaemonMode;
 
-    Parameter(final String description, final int numArgs) {
+    Parameter(final String description, final int numArgs, final boolean enableDaemonMode) {
         this.description = description;
         this.numArgs = numArgs;
+        this.enableDaemonMode = enableDaemonMode;
     }
 
     public String getDescription() {
@@ -111,4 +130,7 @@ public enum Parameter {
         return numArgs;
     }
 
+    public boolean enableDaemonMode() {
+        return enableDaemonMode;
+    }
 }
