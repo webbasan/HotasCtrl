@@ -11,6 +11,10 @@ import de.mundito.hid.SetupHandlerRegistry;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 
@@ -47,6 +51,53 @@ public final class HotasCtrl {
         // - if in foreground: open input stream, waiting to get new configuration commands
         // TODO: - if in background: wait until daemon thread dies...
         // TODO: - open socket: expect to receive HTTP GET requests -> mapped to configuration commands
+        handleConsoleInput();
+
+        InetAddress bindAddress = InetAddress.getLoopbackAddress(); // bind only 127.0.0.1, won't open network accessible socket
+        int port = 8079;
+        int backlog = 50;
+        try {
+            ServerSocket listenerSocket = new ServerSocket(port, backlog, bindAddress);
+            do {
+                Socket socket = listenerSocket.accept();
+                ByteBuffer buffer = null;
+                socket.getChannel().read(buffer);
+
+            } while ( true );
+        }
+        catch (IOException e) {
+            e.printStackTrace();  // TODO: implement suitable exception handling.
+        }
+    }
+
+    public void shutdown() {
+        this.hotas.shutdown();
+        this.hotas = null;
+    }
+
+    public static void main(String... args) {
+        Configuration configuration = new Configuration(ArgHandlerRegistry.readArgs(args));
+        if (!configuration.isValid()) {
+            System.err.println(configuration.getInvalidMessage());
+            printUsage();
+            return;
+        }
+
+        HotasCtrl app = new HotasCtrl(configuration);
+        try {
+            app.init();
+            app.doIt();
+        }
+        catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace(System.err);
+        }
+        finally {
+            app.shutdown();
+        }
+    }
+
+    private void handleConsoleInput() {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
             while (true) {
@@ -85,33 +136,6 @@ public final class HotasCtrl {
         }
         catch (IOException e) {
             System.out.println("Error while reading input: " + e);
-        }
-    }
-
-    public void shutdown() {
-        this.hotas.shutdown();
-        this.hotas = null;
-    }
-
-    public static void main(String... args) {
-        Configuration configuration = new Configuration(ArgHandlerRegistry.readArgs(args));
-        if (!configuration.isValid()) {
-            System.err.println(configuration.getInvalidMessage());
-            printUsage();
-            return;
-        }
-
-        HotasCtrl app = new HotasCtrl(configuration);
-        try {
-            app.init();
-            app.doIt();
-        }
-        catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
-            e.printStackTrace(System.err);
-        }
-        finally {
-            app.shutdown();
         }
     }
 

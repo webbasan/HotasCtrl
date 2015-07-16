@@ -1,9 +1,10 @@
 package de.mundito.hid;
 
 import de.mundito.args.Parameter;
+import de.mundito.util.Util;
 
 import java.text.DateFormat;
-import java.util.Date;
+import java.util.Calendar;
 
 
 /**
@@ -46,8 +47,21 @@ public class HotasMock
     }
 
     @Override
-    public void setCurrentLocalDate(final boolean enable24H) {
-        System.out.println("Set date to " + DateFormat.getDateInstance().format(new Date()));
+    public void enableClock(Parameter.ClockVariant clock) {
+        Calendar localTimeStamp = null;
+
+        switch (clock) {
+            case LOCAL_24H:
+            case LOCAL_12H:
+                localTimeStamp = Util.createLocalCalendar();
+                break;
+            case UTC_24H:
+            case UTC_12H:
+                localTimeStamp = Util.createUtcCalendar();
+                break;
+        }
+
+        System.out.println("Set date to " + DateFormat.getDateTimeInstance().format(localTimeStamp.getTime()));
     }
 
     public void shutdown() {

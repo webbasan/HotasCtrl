@@ -16,13 +16,6 @@ public class SetupClock
     @Override
     public void setup(final Hotas hotas, final ArgHandler argHandler) {
         ArgHandlerClock argHandlerClock = (ArgHandlerClock)argHandler;
-        switch (argHandlerClock.getVariant()) {
-            case LOCAL_24H:
-                hotas.setCurrentLocalDate(true);
-                break;
-            case LOCAL_12H:
-                hotas.setCurrentLocalDate(false);
-                break;
-        }
+        hotas.enableClock(argHandlerClock.getVariant());
     }
 }

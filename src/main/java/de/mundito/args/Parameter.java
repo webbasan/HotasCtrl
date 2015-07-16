@@ -96,7 +96,7 @@ public enum Parameter {
     }
 
     public enum ClockVariant implements Sub {
-        LOCAL_24H, LOCAL_12H;
+        LOCAL_24H, LOCAL_12H, UTC_24H, UTC_12H;
 
         public static String getValidValueDescription() {
             String validValues = null;

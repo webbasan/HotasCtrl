@@ -18,7 +18,7 @@ public interface Hotas {
 
     void setText(int lineNum, String text);
 
-    void setCurrentLocalDate(boolean enable24H);
+    void enableClock(Parameter.ClockVariant clock);
 
     void shutdown();
 

@@ -1,6 +1,7 @@
 package de.mundito.hid;
 
 import de.mundito.args.Parameter;
+import de.mundito.util.Util;
 
 import java.text.DateFormat;
 import java.util.*;
@@ -55,8 +56,8 @@ public class HotasX52Daemon
     }
 
     @Override
-    public void setCurrentLocalDate(final boolean enable24H) {
-        this.state.setCurrentLocalDate(enable24H);
+    public void enableClock(Parameter.ClockVariant clock) {
+        this.state.enableClock(clock);
     }
 
     @Override
@@ -104,7 +105,7 @@ public class HotasX52Daemon
                 if (isSupportedDevice()) {
                     // update clock
                     if (HotasX52Daemon.this.state.isClockEnabled()) {
-                        updateClock(HotasX52Daemon.this.state.is24HEnabled());
+                        updateClock(HotasX52Daemon.this.state.getClock());
                     }
 
                     // check if state is changed -> apply new state
@@ -169,8 +170,22 @@ public class HotasX52Daemon
             this.device.setLED(led.greenLed, color.green);
         }
 
-        private void updateClock(boolean enable24H) {
-            Calendar currentDateTime = Calendar.getInstance();
+        private void updateClock(Parameter.ClockVariant clock) {
+            Calendar currentDateTime = null;
+            boolean enable24H = false;
+            switch (clock) {
+                case LOCAL_24H:
+                    enable24H = true;
+                case LOCAL_12H:
+                    currentDateTime = Util.createLocalCalendar();
+                    break;
+                case UTC_24H:
+                    enable24H = true;
+                case UTC_12H:
+                    currentDateTime = Util.createUtcCalendar();
+                    break;
+            }
+
 //            System.out.println("Set date to " + DateFormat.getDateTimeInstance().format(currentDateTime.getTime()));
             this.device.setDateTime(currentDateTime, enable24H);
         }
@@ -187,8 +202,7 @@ public class HotasX52Daemon
         private final Set<InternalValues.LightSource> dirtyLights;
         private final Set<Integer> dirtyLines;
 
-        private boolean clockEnabled;
-        private boolean enable24H;
+        private Parameter.ClockVariant clock;
 
         public HotasState() {
             this.leds = new HashMap<>();
@@ -211,20 +225,17 @@ public class HotasX52Daemon
             for (int i = 1; i <= this.textLines.length; i++) {
                 setText(i, "");
             }
-            this.clockEnabled = false;
-            this.enable24H = false;
+            this.clock = null;
         }
 
         @Override
-        public synchronized void setBrightness(final Parameter.LightSource light,
-                                               final Parameter.Brightness brightness) {
+        public synchronized void setBrightness(final Parameter.LightSource light, final Parameter.Brightness brightness) {
             setBrightness(light, brightness.value);
         }
 
         @Override
         public synchronized void setBrightness(final Parameter.LightSource light, final int brightnessValue) {
-            for (InternalValues.LightSource internalName : HotasX52Daemon.this.parameterMappings.getLightSourceMappings(
-                    light)) {
+            for (InternalValues.LightSource internalName : HotasX52Daemon.this.parameterMappings.getLightSourceMappings(light)) {
                 this.lights.put(internalName, brightnessValue);
                 this.dirtyLights.add(internalName);
             }
@@ -281,17 +292,16 @@ public class HotasX52Daemon
         }
 
         @Override
-        public void setCurrentLocalDate(final boolean enable24H) {
-            this.clockEnabled = true;
-            this.enable24H = enable24H;
+        public synchronized void enableClock(Parameter.ClockVariant clock) {
+            this.clock = clock;
         }
 
-        public boolean isClockEnabled() {
-            return this.clockEnabled;
+        public synchronized boolean isClockEnabled() {
+            return this.clock != null;
         }
 
-        public boolean is24HEnabled() {
-            return enable24H;
+        public synchronized Parameter.ClockVariant getClock() {
+            return this.clock;
         }
 
         public void reset() {
@@ -303,7 +313,7 @@ public class HotasX52Daemon
         }
 
         @Override
-        public void shutdown() {
+        public synchronized void shutdown() {
             this.leds.clear();
             this.dirtyLeds.clear();
 
@@ -315,8 +325,7 @@ public class HotasX52Daemon
             }
             this.dirtyLines.clear();
 
-            this.clockEnabled = false;
-            this.enable24H = false;
+            this.clock = null;
         }
     }
 }

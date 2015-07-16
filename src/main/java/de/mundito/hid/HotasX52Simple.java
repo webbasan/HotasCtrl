@@ -1,6 +1,7 @@
 package de.mundito.hid;
 
 import de.mundito.args.Parameter;
+import de.mundito.util.Util;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -63,12 +64,23 @@ public class HotasX52Simple
     }
 
     @Override
-    public void setCurrentLocalDate(final boolean enable24H) {
-        if (isSupportedDevice()) {
-            Calendar currentDateTime = Calendar.getInstance();
-            System.out.println("Set date to " + DateFormat.getDateInstance().format(currentDateTime.getTime()));
-            this.device.setDateTime(currentDateTime, enable24H);
+    public void enableClock(Parameter.ClockVariant clock) {
+        Calendar currentDateTime = null;
+        boolean enable24H = false;
+        switch (clock) {
+            case LOCAL_24H:
+                enable24H = true;
+            case LOCAL_12H:
+                currentDateTime = Util.createLocalCalendar();
+                break;
+            case UTC_24H:
+                enable24H = true;
+            case UTC_12H:
+                currentDateTime = Util.createUtcCalendar();
+                break;
         }
+        System.out.println("Set date to " + DateFormat.getDateInstance().format(currentDateTime.getTime()));
+        this.device.setDateTime(currentDateTime, enable24H);
     }
 
     @Override
