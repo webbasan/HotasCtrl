@@ -30,6 +30,11 @@ public class HotasX52Simple
     }
 
     @Override
+    public void update() {
+        // nothing to do.
+    }
+
+    @Override
     public void setBrightness(final Parameter.LightSource lightSource, final Parameter.Brightness brightness) {
         if (isSupportedDevice()) {
             setBrightness(lightSource, brightness.value);
@@ -74,8 +79,12 @@ public class HotasX52Simple
                 currentDateTime = Util.createLocalCalendar();
                 break;
             case UTC_24H:
+            case GMT_24H:
+            case ZULU_24H:
                 enable24H = true;
             case UTC_12H:
+            case GMT_12H:
+            case ZULU_12H:
                 currentDateTime = Util.createUtcCalendar();
                 break;
         }

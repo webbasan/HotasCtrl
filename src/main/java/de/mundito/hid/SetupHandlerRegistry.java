@@ -1,5 +1,6 @@
 package de.mundito.hid;
 
+import de.mundito.args.ArgHandler;
 import de.mundito.args.Parameter;
 
 import java.util.HashMap;
@@ -21,6 +22,12 @@ public final class SetupHandlerRegistry {
         HANDLERS_BY_PARAMETER.put(SetupTextLine3.PARAMETER, new SetupTextLine3());
         HANDLERS_BY_PARAMETER.put(SetupTextLines.PARAMETER, new SetupTextLines());
         HANDLERS_BY_PARAMETER.put(SetupClock.PARAMETER, new SetupClock());
+        HANDLERS_BY_PARAMETER.put(Parameter.DAEMON, new SetupHandler() {
+            @Override
+            public void setup(final Hotas hotas, final ArgHandler argHandler) {
+                // nothing to do.
+            }
+        });
     }
 
     private SetupHandlerRegistry() {

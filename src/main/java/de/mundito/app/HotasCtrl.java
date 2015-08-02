@@ -11,10 +11,6 @@ import de.mundito.hid.SetupHandlerRegistry;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.nio.ByteBuffer;
 import java.util.List;
 
 
@@ -43,31 +39,19 @@ public final class HotasCtrl {
                 setupHandler.setup(this.hotas, argHandler);
             }
             else {
-                // FIXME: complain - don't know how to handle arg!
+                // complain - don't know how to handle arg!
+                System.out.println("Unable to handle argument '" + argHandler.getParameter() + "'!");
             }
         }
+        this.hotas.update();
 
         // do something different while hotas does what it has to do:
-        // - if in foreground: open input stream, waiting to get new configuration commands
-        // TODO: - if in background: wait until daemon thread dies...
         // TODO: - open socket: expect to receive HTTP GET requests -> mapped to configuration commands
+
+        // - if in foreground: open input stream, waiting to get new configuration commands
+        // TODO: this should be enabled only on demand => Parameter "console" missing
         handleConsoleInput();
-
-        InetAddress bindAddress = InetAddress.getLoopbackAddress(); // bind only 127.0.0.1, won't open network accessible socket
-        int port = 8079;
-        int backlog = 50;
-        try {
-            ServerSocket listenerSocket = new ServerSocket(port, backlog, bindAddress);
-            do {
-                Socket socket = listenerSocket.accept();
-                ByteBuffer buffer = null;
-                socket.getChannel().read(buffer);
-
-            } while ( true );
-        }
-        catch (IOException e) {
-            e.printStackTrace();  // TODO: implement suitable exception handling.
-        }
+        // TODO: - if in background: wait until daemon thread dies...
     }
 
     public void shutdown() {
@@ -117,6 +101,7 @@ public final class HotasCtrl {
                     printUsage();
                 }
                 else {
+                    boolean stateChanged = false;
                     try {
                         List<ArgHandler> argHandlers = ArgHandlerRegistry.readArgs(input.split(" "));
                         for (ArgHandler argHandler : argHandlers) {
@@ -124,12 +109,18 @@ public final class HotasCtrl {
                                 SetupHandler setupHandler = SetupHandlerRegistry.getHandler(argHandler.getParameter());
                                 if (setupHandler != null) {
                                     setupHandler.setup(this.hotas, argHandler);
+                                    stateChanged = true;
                                 }
                             }
                         }
                     }
                     catch (Exception e) {
-                        System.out.println("Unable to handle '" + input + "': " + e);
+                        System.out.println("Unable to handle input '" + input + "': " + e);
+                    }
+                    finally {
+                        if (stateChanged) {
+                            this.hotas.update();
+                        }
                     }
                 }
             }

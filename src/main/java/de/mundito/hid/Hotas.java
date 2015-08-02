@@ -10,6 +10,11 @@ public interface Hotas {
 
     void init();
 
+    void update();
+
+    void shutdown();
+
+
     void setBrightness(Parameter.LightSource lightSource, Parameter.Brightness brightness);
 
     void setBrightness(Parameter.LightSource lightSource, int brightnessValue);
@@ -19,7 +24,5 @@ public interface Hotas {
     void setText(int lineNum, String text);
 
     void enableClock(Parameter.ClockVariant clock);
-
-    void shutdown();
 
 }

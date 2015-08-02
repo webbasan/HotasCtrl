@@ -1,12 +1,15 @@
 What's this?
 ============
 
-A small command line tool to setup lighting and display on the Saitek/MadCatz
-X52/X52pro.
+A command line tool to setup lighting and display on the
+Saitek/MadCatz X52/X52pro.
 
 It is written in Java, so a JRE is required, at least version 7. The JAR-file
-is an executable JAR bundled with all dependencies. It should work on Windows
-and Linux also, but is currently only tested on OS X.
+is an executable JAR bundled with all dependencies. It may work on Linux also,
+but is currently only tested on OS X.
+
+It is known not to work on Windows because of additional requirements of the
+USB drivers on Windows. This still has to be investigated further.
 
 The tool will print a usage description when no args or unknown args are
 given.
@@ -20,14 +23,14 @@ Valid subsystem names are:
 
 light:
     parameters: <type> <brightness level>
-    where type is on of: mfd, led, all
+    where type is one of: mfd, led, all
     and brightness level is either a numerical between 0 and 127
         or a named value: off, dark, half, full, on (same as "full")
 
 led:
     parameters: <LED name> <color>
-    where LED name is on of: A, B, D, E, I, T1, T2, T3, POV, FIRE, THROTTLE, ALL
-    and color is on of: red, amber, green, off, on (same as "green")
+    where LED name is one of: A, B, D, E, I, T1, T2, T3, POV, FIRE, THROTTLE, ALL
+    and color is one of: red, amber, green, off, on (same as "green")
     NOTE: useful values for FIRE and THROTTLE are only "on" and "off".
 
 line1,line2,line3:
@@ -40,6 +43,17 @@ text:
     parameters: "<some text\nwith multiple\nlines>"
     This allows to set multiple lines of text with in one argument.
     The lines should be separated by the character sequence "\n".
+
+clock:
+    parameters: <clock type>
+    where clock is one of: local_24h, local_12h, utc_24h, utc_12h, gmt_24h, gmt_12h, zulu_24h, zulu_12h
+    The utc, gmt and zulu variants are convenient synonyms for the same clock types.
+    If the clock is activated, the application will automatically go into "daemon" mode.
+
+daemon:
+    Activates the "daemon" mode: The application won't exit after the initial
+    setup and keeps running. It will regularly check the connected state of
+    the device and will initialize it again when it is re-connected.
 
 
 Examples:

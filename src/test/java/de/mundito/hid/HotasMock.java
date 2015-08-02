@@ -25,6 +25,11 @@ public class HotasMock
         System.out.println("HOTAS initialized.");
     }
 
+    @Override
+    public void update() {
+        System.out.println("HOTAS updated.");
+    }
+
     public void setBrightness(Parameter.LightSource lightSource, Parameter.Brightness brightness) {
         setBrightness(lightSource, brightness.value);
     }
@@ -57,6 +62,10 @@ public class HotasMock
                 break;
             case UTC_24H:
             case UTC_12H:
+            case GMT_24H:
+            case GMT_12H:
+            case ZULU_24H:
+            case ZULU_12H:
                 localTimeStamp = Util.createUtcCalendar();
                 break;
         }
