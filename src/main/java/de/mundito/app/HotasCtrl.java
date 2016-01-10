@@ -7,10 +7,12 @@ import de.mundito.configuration.Configuration;
 import de.mundito.hid.Hotas;
 import de.mundito.hid.SetupHandler;
 import de.mundito.hid.SetupHandlerRegistry;
+import de.mundito.net.NetServer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.util.List;
 
 
@@ -18,6 +20,9 @@ import java.util.List;
  * User: webbasan Date: 01.05.15 Time: 23:25
  */
 public final class HotasCtrl {
+
+    public static final String APPLICATION_NAME = "HotasCtrl";
+    public static final String APPLICATION_VERSION = "1.1";
 
     private final Configuration configuration;
 
@@ -46,10 +51,15 @@ public final class HotasCtrl {
         this.hotas.update();
 
         // do something different while hotas does what it has to do:
-        // TODO: - open socket: expect to receive HTTP GET requests -> mapped to configuration commands
+        // open socket: expect to receive HTTP GET requests -> mapped to configuration commands
+        // FIXME: this should be enabled only on demand => Parameter "http-port" missing (and maybe "http-address" -> 'expert mode'?)
+        InetAddress serverAddress = InetAddress.getLoopbackAddress();
+        int listenerPort = 8080;
+        Thread serverThread = new Thread(new NetServer(this.hotas, serverAddress, listenerPort));
+        serverThread.start();
 
         // - if in foreground: open input stream, waiting to get new configuration commands
-        // TODO: this should be enabled only on demand => Parameter "console" missing
+        // FIXME: this should be enabled only on demand => Parameter "console" missing
         handleConsoleInput();
         // TODO: - if in background: wait until daemon thread dies...
     }
@@ -87,15 +97,15 @@ public final class HotasCtrl {
             while (true) {
                 String input = reader.readLine();
                 if (input == null) {
-                    break;
+                    break; // EOF
                 }
                 else if (input.equals("")) {
                     continue;
                 }
 
                 input = input.toLowerCase();
-                if (input.startsWith("quit") || input.startsWith("exit")) {
-                    break;
+                if (input.startsWith("quit") || input.startsWith("exit") || input.startsWith("shutdown")) {
+                    break; // bail out
                 }
                 else if (input.startsWith("help")) {
                     printUsage();

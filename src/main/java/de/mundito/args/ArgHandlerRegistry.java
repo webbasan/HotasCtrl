@@ -28,6 +28,23 @@ public final class ArgHandlerRegistry {
         // do not instantiate
     }
 
+
+    public static ArgHandler getArgHandler(final String... values) {
+        if (values.length > 0) {
+            Parameter parameter = Parameter.valueOf(normalizeArgName(values[0]));
+            ArgHandler.Factory factory = getFactory(parameter);
+            if (factory != null) {
+                return factory.create(Arrays.copyOfRange(values, 1, values.length));
+            }
+            else {
+                return null;
+            }
+        }
+        else {
+            return null;
+        }
+    }
+
     public static List<ArgHandler> readArgs(final String... values) {
         List<ArgHandler> argHandlers = new ArrayList<>(values.length);
         ArgsIterator iterator = new ArgsIterator(values);
@@ -38,6 +55,22 @@ public final class ArgHandlerRegistry {
             }
         }
         return argHandlers;
+    }
+
+    private static String normalizeArgName(final String argName) {
+        String result = argName;
+        // get rid of "-" or "--" prefix
+        if (result != null) {
+            if (result.startsWith("--") && result.length() > 2) {
+                result = result.substring(2);
+            }
+            else if (result.startsWith("-") && result.length() > 1) {
+                result = result.substring(2);
+            }
+            // make sure name can match enum names
+            result = result.toUpperCase();
+        }
+        return result;
     }
 
     static class ArgsIterator {
@@ -70,22 +103,6 @@ public final class ArgHandlerRegistry {
                 }
             }
             return null;
-        }
-
-        private String normalizeArgName(final String argName) {
-            String result = argName;
-            // get rid of "-" or "--" prefix
-            if (result != null) {
-                if (result.startsWith("--") && result.length() > 2) {
-                    result = result.substring(2);
-                }
-                else if (result.startsWith("-") && result.length() > 1) {
-                    result = result.substring(2);
-                }
-                // make sure name can match enum names
-                result = result.toUpperCase();
-            }
-            return result;
         }
 
     }

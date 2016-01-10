@@ -2,6 +2,7 @@ package de.mundito.hid;
 
 import de.mundito.args.Parameter;
 import de.mundito.util.Util;
+import org.usb4java.LibUsbException;
 
 import java.text.DateFormat;
 import java.util.*;
@@ -177,38 +178,43 @@ public class HotasX52Daemon
             while (this.keepGoing) {
                 String now = DateFormat.getDateTimeInstance().format(new Date());
                 System.out.println(now + " UpdateTask begin...");
-                if (isAvailable()) {
-                    if (this.device == null) {
-                        System.out.println(now + " HOTAS device became available.");
-                        this.device = SaitekX52Pro.init();
-                    }
-
-                    // do stuff.
-                    if (isSupportedDevice()) {
-                        // update clock
-                        if (HotasX52Daemon.this.state.isClockEnabled()) {
-                            updateClock(HotasX52Daemon.this.state.getClock());
+                try {
+                    if (isAvailable()) {
+                        if (this.device == null) {
+                            System.out.println(now + " HOTAS device became available.");
+                            this.device = SaitekX52Pro.init();
                         }
 
-                        // check if state is changed -> apply new state
-                        setupDevice();
-                    }
-                }
-                else {
-                    if (this.device != null) {
-                        System.out.println(now + " HOTAS device became unavailable.");
-                        this.device.close();
-                        this.device = null;
+                        // do stuff.
+                        if (isSupportedDevice()) {
+                            // update clock
+                            if (HotasX52Daemon.this.state.isClockEnabled()) {
+                                updateClock(HotasX52Daemon.this.state.getClock());
+                            }
 
-                        // mark state as dirty: will trigger reinitialization when device becomes available again.
-                        HotasX52Daemon.this.state.reset();
+                            // check if state is changed -> apply new state
+                            setupDevice();
+                        }
                     }
                     else {
-                        System.out.println(now + " No supported HOTAS device found.");
+                        if (this.device != null) {
+                            System.out.println(now + " HOTAS device became unavailable.");
+                            this.device.close();
+                            this.device = null;
+
+                            // mark state as dirty: will trigger reinitialization when device becomes available again.
+                            HotasX52Daemon.this.state.reset();
+                        }
+                        else {
+                            System.out.println(now + " No supported HOTAS device found.");
+                        }
                     }
+                    System.out.println(now + " UpdateTask end: waiting for notification");
+                    waitForNotification();
                 }
-                System.out.println(now + " UpdateTask end: waiting for notification");
-                waitForNotification();
+                catch (LibUsbException e) {
+                    System.out.println("LibUsbException! -> " + e.getMessage() + " (" + e + ")");
+                }
             }
         }
 
