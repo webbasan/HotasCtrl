@@ -351,7 +351,7 @@ public class SaitekX52Pro
     {
         if (feat_mfd)
         {
-            setDate(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));
+            setDate(date.get(Calendar.YEAR) % 100, date.get(Calendar.MONTH) + 1, date.get(Calendar.DAY_OF_MONTH));
         }
         setTime(enable24H, enable24H ? date.get(Calendar.HOUR_OF_DAY) : date.get(Calendar.HOUR), date.get(Calendar.MINUTE));
         if (feat_sec)
@@ -365,8 +365,7 @@ public class SaitekX52Pro
     int controlMsg(byte index, short value)
     {
         return LibUsb.controlTransfer(hdl,
-                (byte)(LibUsb.REQUEST_TYPE_VENDOR | LibUsb.RECIPIENT_DEVICE
-                        | LibUsb.ENDPOINT_OUT),
+                (byte)(LibUsb.REQUEST_TYPE_VENDOR | LibUsb.RECIPIENT_DEVICE | LibUsb.ENDPOINT_OUT),
                 REQUEST, value, index, NULL, 0);
     }
 }

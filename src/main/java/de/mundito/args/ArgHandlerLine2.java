@@ -39,7 +39,7 @@ public final class ArgHandlerLine2
 
     @Override
     public String getInvalidValueMessage() {
-        return "Invalid values for parameter " + getParameter().name() + "."
+        return "Invalid value for parameter " + getParameter().name() + "."
                 + " Valid values are: " + Parameter.LINE2.getDescription();
     }
 

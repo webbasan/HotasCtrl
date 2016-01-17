@@ -10,6 +10,7 @@ import de.mundito.args.ArgHandlerRegistry;
 import de.mundito.hid.Hotas;
 import de.mundito.hid.SetupHandler;
 import de.mundito.hid.SetupHandlerRegistry;
+import de.mundito.util.Util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,17 +35,22 @@ public class NetServer
     private final int servicePort;
     private final int backlog;
 
+    private boolean keepListening;
+
     public NetServer(final Hotas hotas, final InetAddress bindAddress, final int servicePort) {
         this.hotas = hotas;
 
         this.bindAddress = bindAddress;
         this.servicePort = servicePort;
         this.backlog = 50;
+
+        this.keepListening = false;
     }
 
 
     public void run() {
         log("startup.");
+        this.keepListening = true;
         try {
             doIt();
         }
@@ -52,54 +59,71 @@ public class NetServer
         }
     }
 
+    public void shutdown() {
+        this.keepListening = false;
+    }
+
+    public InetAddress getAddress() {
+        return this.bindAddress;
+    }
+
+    public int getPort() {
+        return this.servicePort;
+    }
+
     private void doIt()
             throws IOException {
-        boolean keepListening = true;
         ServerSocket listenerSocket = new ServerSocket(this.servicePort, this.backlog, this.bindAddress);
+        listenerSocket.setSoTimeout(30 * 1000); // wake up every 30 seconds
 
-        while (keepListening) {
-            log("awaiting connections.");
-            Socket socket = listenerSocket.accept();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter writer = new PrintWriter(socket.getOutputStream());
-            boolean keepAlive = false;
+        while (this.keepListening) {
+            try {
+                log("awaiting connections.");
+                Socket socket = listenerSocket.accept();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                PrintWriter writer = new PrintWriter(socket.getOutputStream());
+                boolean keepAlive = false;
 
-            for (String requestLine = reader.readLine();
-                 requestLine != null && !requestLine.equals("");
-                 requestLine = reader.readLine()) {
-                log("received request '" + requestLine + "'");
+                for (String requestLine = reader.readLine();
+                     requestLine != null && !requestLine.equals("");
+                     requestLine = reader.readLine()) {
+                    log("received request '" + requestLine + "'");
 
-                if (requestLine.startsWith("GET")) {
-                    // No REST API: GET based requests allows for undemanding clients and using path part for simplified parsing
-                    // GET /light/all/on HTTP/1.0
-                    // GET /led/a/red HTTP/1.0
-                    // GET /text/line1\nline2\nline3 HTTP/1.0
-                    // GET /line1/string HTTP/1.0
-                    // GET /clock/local_24h HTTP/1.0
+                    if (requestLine.startsWith("GET")) {
+                        // No REST API: GET based requests allows for undemanding clients and using path part for simplified parsing
+                        // GET /light/all/on HTTP/1.0
+                        // GET /led/a/red HTTP/1.0
+                        // GET /text/line1\nline2\nline3 HTTP/1.0
+                        // GET /line1/string HTTP/1.0
+                        // GET /clock/local_24h HTTP/1.0
 
-                    keepAlive = handleGetRequest(reader, writer, requestLine);
+                        keepAlive = handleGetRequest(reader, writer, requestLine);
+                    }
+                    else if (requestLine.equals("HELLO")) {
+                        String msg = "Hello World!";
+                        log(" >> " + msg);
+                        writer.println(msg);
+                        writer.flush();
+                    }
+                    else if (requestLine.equals("QUIT")) {
+                        this.keepListening = false;
+                        writer.println("Good Bye!");
+                        writer.flush();
+                        log("received shutdown request for server.");
+                    }
+                    if (!keepAlive) {
+                        // shutdown current connection
+                        writer.flush();
+                        reader.close();
+                        writer.close();
+                        socket.close();
+                        log("connection closed.");
+                        break; // exit request reader loop.
+                    }
                 }
-                else if (requestLine.equals("HELLO")) {
-                    String msg = "Hello World!";
-                    log(" >> " + msg);
-                    writer.println(msg);
-                    writer.flush();
-                }
-                else if (requestLine.equals("QUIT")) {
-                    keepListening = false;
-                    writer.println("Good Bye!");
-                    writer.flush();
-                    log("received shutdown request for server.");
-                }
-                if (!keepAlive) {
-                    // shutdown current connection
-                    writer.flush();
-                    reader.close();
-                    writer.close();
-                    socket.close();
-                    log("connection closed.");
-                    break; // exit request reader loop.
-                }
+            }
+            catch (SocketTimeoutException timeout) {
+                // check condition to continue
             }
         }
 
@@ -155,9 +179,9 @@ public class NetServer
                         stateChanged = true;
                     }
                     else {
-                        // no setupHandler (implementation error - should not happen!) => 500 Internal Server Error
-                        log("NO SetupHandler for '" + argHandler.getParameter() + "'!");
-                        result = Result.INTERNAL_ERROR;
+                        // no setupHandler -- don't handle arguments out of HOTAS scope
+                        log("Ignoring '" + argHandler.getParameter() + "': out of scope.");
+                        result = Result.INVALID_ARGUMENTS;
                     }
                 }
                 else {
@@ -206,7 +230,7 @@ public class NetServer
     }
 
     private void log(final String msg) {
-        System.err.printf("%s Server: %s\n", DateFormat.getDateTimeInstance().format(new Date()), msg);
+        Util.log("Server: " + msg);
     }
 
     private static String getServerDate() {

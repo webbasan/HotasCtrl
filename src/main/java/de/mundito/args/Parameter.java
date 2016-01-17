@@ -13,6 +13,8 @@ public enum Parameter {
     LINE2("<text for line 2>", 1, false),
     LINE3("<text for line 3>", 1, false),
     CLOCK("(" + ClockVariant.getValidValueDescription() + ")", 1, true),
+    CONSOLE("", 0, true),
+    HTTP_PORT("<port number", 1, true),
     DAEMON("", 0, true);
 
     public interface Sub {}

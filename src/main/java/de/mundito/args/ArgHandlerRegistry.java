@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -21,20 +23,63 @@ public final class ArgHandlerRegistry {
         addFactory(ArgHandlerLine3.FACTORY);
         addFactory(ArgHandlerText.FACTORY);
         addFactory(ArgHandlerClock.FACTORY);
+        addFactory(ArgHandlerConsole.FACTORY);
         addFactory(ArgHandlerDaemon.FACTORY);
+        addFactory(ArgHandlerHttpPort.FACTORY);
     }
 
     private ArgHandlerRegistry() {
         // do not instantiate
     }
 
-
-    public static ArgHandler getArgHandler(final String... values) {
+    /**
+     * Read argument from a command line.
+     *
+     * This might be used in a context when no command line parser properly prepared the command line elements, i.e.
+     * no handling of quote characters etc. So this method will try to do it internally.
+     *
+     * Command line elements will normally be "words", separated by spaces. To allow strings containing spaces in an
+     * element, this element should be enclosed by quote characters, either " or '. To allow any of the quote characters
+     * in a string, use the other quote character to enclose the element (similar to JavaScript).
+     *
+     * Therefore, an element containing spaces and both quote characters is NOT supported.
+     *
+     * @param values first element: argument, second element: additional parameters
+     * @return the ArgHandler representing the command line argument, or null if the argument is unknown.
+     */
+    public static ArgHandler readArg(final String... values) {
         if (values.length > 0) {
             Parameter parameter = Parameter.valueOf(normalizeArgName(values[0]));
             ArgHandler.Factory factory = getFactory(parameter);
             if (factory != null) {
-                return factory.create(Arrays.copyOfRange(values, 1, values.length));
+                if (values.length > 1) {
+                    // parse the rest
+                    String rest = values[1];
+                    // Regex:
+                    // - group 1: match string starting with ", anything not a " upto the next "
+                    // - group 2: match string starting with ', anything not a ' upto the next '
+                    // - group 3: match anything non whitespace
+                    String regex = "\"([^\"]*)\"|'([^']*)'|(\\S+)";
+
+                    List<String> result = new ArrayList<>();
+                    Matcher matcher = Pattern.compile(regex).matcher(rest);
+                    while (matcher.find()) {
+                        if (matcher.group(1) != null) {
+                            result.add(matcher.group(1));
+                        }
+                        else if (matcher.group(2) != null) {
+                            result.add(matcher.group(2));
+                        }
+                        else if (matcher.group(3) != null) {
+                            result.add(matcher.group(3));
+                        }
+                    }
+                    return factory.create(result.toArray(new String[result.size()]));
+                }
+                else {
+                    // no addition parameters
+                    return factory.create();
+                }
             }
             else {
                 return null;
@@ -55,6 +100,22 @@ public final class ArgHandlerRegistry {
             }
         }
         return argHandlers;
+    }
+
+    public static ArgHandler getArgHandler(final String... values) {
+        if (values.length > 0) {
+            Parameter parameter = Parameter.valueOf(normalizeArgName(values[0]));
+            ArgHandler.Factory factory = getFactory(parameter);
+            if (factory != null) {
+                return factory.create(Arrays.copyOfRange(values, 1, values.length));
+            }
+            else {
+                return null;
+            }
+        }
+        else {
+            return null;
+        }
     }
 
     private static String normalizeArgName(final String argName) {

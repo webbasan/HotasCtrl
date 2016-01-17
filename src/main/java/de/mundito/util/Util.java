@@ -3,7 +3,9 @@
  */
 package de.mundito.util;
 
+import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 
 /**
@@ -27,7 +29,12 @@ public final class Util {
 
         localTimeStamp.add(Calendar.HOUR_OF_DAY, -offsetHrs);
         localTimeStamp.add(Calendar.MINUTE, -offsetMins);
+        localTimeStamp.setTimeZone(TimeZone.getTimeZone("UTC"));
         return localTimeStamp;
+    }
+
+    public static void log(final String msg) {
+        System.err.printf("%s: %s\n", DateFormat.getDateTimeInstance().format(new Date()), msg);
     }
 
     private Util() {

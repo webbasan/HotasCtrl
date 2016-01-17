@@ -95,13 +95,13 @@ public class HotasX52Daemon
     }
 
     private void enableDaemon() {
-        System.out.println("enableDaemon(): begin...");
+        Util.log("enableDaemon(): begin...");
         // TODO: -> UpdaterTask handles UpdateJobs
         // TODO: -> UpdateJob is ( ClockUpdate | TextScrollUpdate | CountDownUpdate | WaitForDevice )
         this.updateTask = new UpdateTask();
 
         if (this.useExecutorForUpdate) {
-            System.out.println("enableDaemon(): Using Executor for UpdateTask");
+            Util.log("enableDaemon(): Using Executor for UpdateTask");
             this.executorService = Executors.newScheduledThreadPool(1);
             // TODO: get appropriate update interval:
             // TODO: - clock, text-scrolling, [countdown]: one second
@@ -112,22 +112,22 @@ public class HotasX52Daemon
             this.executorService.scheduleAtFixedRate(this.updateTask, initialDelay, updatePeriod, TimeUnit.SECONDS);
         }
         else {
-            System.out.println("enableDaemon(): Using Thread for UpdateTask");
+            Util.log("enableDaemon(): Using Thread for UpdateTask");
             this.updaterThread = new Thread(this.updateTask);
             this.updaterThread.setDaemon(true); // make sure this thread won't keep the VM running, if the main process dies.
             this.updaterThread.start();
-            System.out.println("enableDaemon(): Thread started");
+            Util.log("enableDaemon(): Thread started");
             Thread.yield();
         }
-        System.out.println("enableDaemon(): done.");
+        Util.log("enableDaemon(): done.");
     }
 
     private void disableDaemon() {
-        System.out.println("disableDaemon(): begin... shutting down UpdateTask");
+        Util.log("disableDaemon(): begin... shutting down UpdateTask");
         this.updateTask.shutdown();
 
         if (this.updaterThread != null) {
-            System.out.println("disableDaemon(): waiting to join with UpdaterThread");
+            Util.log("disableDaemon(): waiting to join with UpdaterThread");
             while (this.updaterThread.isAlive()) {
                 try {
                     this.updaterThread.join();
@@ -139,15 +139,15 @@ public class HotasX52Daemon
             this.updaterThread = null;
         }
         if (this.executorService != null) {
-            System.out.println("disableDaemon(): shutting down ExecutorService");
+            Util.log("disableDaemon(): shutting down ExecutorService");
             this.executorService.shutdownNow();
             this.executorService = null;
         }
-        System.out.println("disableDaemon(): done.");
+        Util.log("disableDaemon(): done.");
     }
 
     private void launchClockUpdater() {
-        System.out.println("creating timer for clock updates.");
+        Util.log("creating timer for clock updates.");
 
         this.executorService = Executors.newScheduledThreadPool(1);
         long now = System.currentTimeMillis();
@@ -176,12 +176,10 @@ public class HotasX52Daemon
         @Override
         public void run() {
             while (this.keepGoing) {
-                String now = DateFormat.getDateTimeInstance().format(new Date());
-                System.out.println(now + " UpdateTask begin...");
                 try {
                     if (isAvailable()) {
                         if (this.device == null) {
-                            System.out.println(now + " HOTAS device became available.");
+                            Util.log("HOTAS Updater: device became available.");
                             this.device = SaitekX52Pro.init();
                         }
 
@@ -198,7 +196,7 @@ public class HotasX52Daemon
                     }
                     else {
                         if (this.device != null) {
-                            System.out.println(now + " HOTAS device became unavailable.");
+                            Util.log("HOTAS Updater: device became unavailable.");
                             this.device.close();
                             this.device = null;
 
@@ -206,14 +204,14 @@ public class HotasX52Daemon
                             HotasX52Daemon.this.state.reset();
                         }
                         else {
-                            System.out.println(now + " No supported HOTAS device found.");
+                            Util.log("HOTAS Updater: No supported device found.");
                         }
                     }
-                    System.out.println(now + " UpdateTask end: waiting for notification");
+//                    Util.log("HOTAS Updater: waiting for notification");
                     waitForNotification();
                 }
                 catch (LibUsbException e) {
-                    System.out.println("LibUsbException! -> " + e.getMessage() + " (" + e + ")");
+                    Util.log("HOTAS Updater: LibUsbException! -> " + e.getMessage() + " (" + e + ")");
                 }
             }
         }
@@ -230,7 +228,7 @@ public class HotasX52Daemon
                 catch (InterruptedException e) {
                     // something woke us up...
                     String now = DateFormat.getDateTimeInstance().format(new Date());
-                    System.out.println(now + " UpdateTask interrupted.");
+                    Util.log("HOTAS Updater: awake.");
                 }
             }
         }
@@ -259,7 +257,7 @@ public class HotasX52Daemon
                 }
             }
             catch (Exception e) {
-                System.out.println("Exception! -> " + e.getMessage() + " (" + e + ")");
+                Util.log("HOTAS Updater: setupDevice() Error -> " + e.getMessage() + " (" + e + ")");
             }
         }
 
@@ -268,12 +266,12 @@ public class HotasX52Daemon
         }
 
         private void setBrightness(InternalValues.LightSource lightSource, int brightnessValue) {
-            System.out.println("Set " + lightSource.name() + " with brightness " + brightnessValue);
+            Util.log("HOTAS Updater: Set " + lightSource.name() + " with brightness " + brightnessValue);
             this.device.setBrightness(lightSource == InternalValues.LightSource.MFD, brightnessValue);
         }
 
         private void setLedColor(InternalValues.Led led, InternalValues.LedColor color) {
-            System.out.println("Set LED " + led.name() + " to color " + color.name());
+            Util.log("HOTAS Updater: Set LED " + led.name() + " to color " + color.name());
             this.device.setLED(led.redLed, color.red);
             this.device.setLED(led.greenLed, color.green);
         }
@@ -298,8 +296,10 @@ public class HotasX52Daemon
                     break;
             }
 
-//            System.out.println("Set date to " + DateFormat.getDateTimeInstance().format(currentDateTime.getTime()));
+//            Util.log("Set date to " + DateFormat.getDateTimeInstance().format(currentDateTime.getTime()));
             this.device.setDateTime(currentDateTime, enable24H);
+            int tzOffs = currentDateTime.getTimeZone().getOffset(System.currentTimeMillis()) / 1000 / 60;
+            this.device.setOffs(1, true, true, tzOffs);
         }
 
     }
