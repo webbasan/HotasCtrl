@@ -205,11 +205,9 @@ public class NetServer
             if (stateChanged) {
                 this.hotas.update();
                 log("HOTAS updated.");
-                // TODO: feedback when HOTAS is offline => 503 Service Unavailable
+                // TODO: may be feedback when HOTAS is offline => 503 Service Unavailable
             }
             if (result == null) {
-                // possible responses: 200 OK || 201 Created || 204 No Content
-                // better use 200 OK: don't confuse simple-minded clients
                 result = Result.OK;
             }
         }

@@ -4,7 +4,6 @@ import de.mundito.args.Parameter;
 import de.mundito.util.Util;
 import org.usb4java.LibUsbException;
 
-import java.text.DateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -104,8 +103,9 @@ public class HotasX52Daemon
             Util.log("enableDaemon(): Using Executor for UpdateTask");
             this.executorService = Executors.newScheduledThreadPool(1);
             // TODO: get appropriate update interval:
-            // TODO: - clock, text-scrolling, [countdown]: one second
-            // TODO: - wait-for-device: default: one minute; otherwise
+            // TODO: - clock: 30 seconds
+            // TODO: - text-scrolling, [countdown]: one second?
+            // TODO: - wait-for-device: one minute
             long initialDelay = 10;
             long updatePeriod = 10;
             // run UpdaterTask
@@ -227,7 +227,6 @@ public class HotasX52Daemon
                 }
                 catch (InterruptedException e) {
                     // something woke us up...
-                    String now = DateFormat.getDateTimeInstance().format(new Date());
                     Util.log("HOTAS Updater: awake.");
                 }
             }
@@ -299,7 +298,7 @@ public class HotasX52Daemon
 //            Util.log("Set date to " + DateFormat.getDateTimeInstance().format(currentDateTime.getTime()));
             this.device.setDateTime(currentDateTime, enable24H);
             int tzOffs = currentDateTime.getTimeZone().getOffset(System.currentTimeMillis()) / 1000 / 60;
-            this.device.setOffs(1, true, true, tzOffs);
+            this.device.setOffs(1, true, true, tzOffs); // set secondary time display to GMT time
         }
 
     }

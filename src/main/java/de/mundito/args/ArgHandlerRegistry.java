@@ -159,7 +159,7 @@ public final class ArgHandlerRegistry {
                     return factory.create(Arrays.copyOfRange(this.args, start, end));
                 }
                 else {
-                    // TODO: complain - but don't bail out...
+                    // complain - but don't bail out...
                     System.err.println("Unknown argument '" + parameter + "'!");
                 }
             }

@@ -90,9 +90,18 @@ public final class HotasCtrl {
             handleConsoleInput();
         }
         else if (this.configuration.shouldEnableDaemonMode()) {
-            // if in background: wait until NetServer thread dies...
-            waitForShutdown();
+            synchronized (this) {
+                try {
+                    wait();
+                }
+                catch (InterruptedException e) {
+                    // something woke us up...
+                    Util.log(APPLICATION_NAME + ": awake.");
+                }
+            }
         }
+        // check and wait until NetServer thread dies...
+        waitForShutdown();
     }
 
     public void shutdown() {
@@ -189,6 +198,9 @@ public final class HotasCtrl {
             this.netServerThread = null;
             this.netServer = null;
             Util.log("HTTP thread exited.");
+        }
+        if (this.configuration.shouldEnableDaemonMode()) {
+            Util.log(APPLICATION_NAME + ": shutdown.");
         }
     }
 
