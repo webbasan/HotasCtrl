@@ -200,6 +200,9 @@ public class SaitekX52Pro
                         foundSupportedDevice = true;
                         break;
                 }
+                if (foundSupportedDevice) {
+                    break;
+                }
             }
         }
         finally {

@@ -17,7 +17,9 @@ M2: "Daemon" mode (still Java based)
     => Allow callback from applications to change setup
     - Configuration files: different "Profiles", i.e. Application specific
     - IPC - How?:
-      - ControllerMate can make HTTP-Requests
+      - ControllerMate can make HTTP-Requests -- UPDATE:
+            not quite correct: ControllerMate delegates request to OS, that's why Safari gets called to do the job!
+            => Recommendation: use/register custom "protocol" ("hotas://"? - how much "uniqueness" is required..?)
         => REST-like API (although "GET" based...),
            simple HTTP handling would be enough, no need for Servlet-Container
       - How does X-Plane handle it?

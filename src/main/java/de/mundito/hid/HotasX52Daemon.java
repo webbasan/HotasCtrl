@@ -177,41 +177,41 @@ public class HotasX52Daemon
         public void run() {
             while (this.keepGoing) {
                 try {
-                    if (isAvailable()) {
-                        if (this.device == null) {
+                    if (this.device == null) {
+                        this.device = SaitekX52Pro.init();
+                        if (this.device != null) {
                             Util.log("HOTAS Updater: device became available.");
-                            this.device = SaitekX52Pro.init();
                         }
+                    }
 
-                        // do stuff.
-                        if (isSupportedDevice()) {
-                            // update clock
-                            if (HotasX52Daemon.this.state.isClockEnabled()) {
-                                updateClock(HotasX52Daemon.this.state.getClock());
+                    if (this.device != null) {
+//                        Util.log("HOTAS Updater: device is available.");
+                        if (SaitekX52Pro.isAvailableProductX52()) {
+                            // do stuff.
+                            if (isSupportedDevice()) {
+                                // update clock
+                                if (HotasX52Daemon.this.state.isClockEnabled()) {
+                                    updateClock(HotasX52Daemon.this.state.getClock());
+                                }
+
+                                // check if state is changed -> apply new state
+                                setupDevice();
                             }
-
-                            // check if state is changed -> apply new state
-                            setupDevice();
+                        } else {
+                            Util.log("HOTAS Updater: device became unavailable.");
+                            cleanupDevice();
                         }
                     }
                     else {
-                        if (this.device != null) {
-                            Util.log("HOTAS Updater: device became unavailable.");
-                            this.device.close();
-                            this.device = null;
-
-                            // mark state as dirty: will trigger reinitialization when device becomes available again.
-                            HotasX52Daemon.this.state.reset();
-                        }
-                        else {
-                            Util.log("HOTAS Updater: No supported device found.");
-                        }
+                        Util.log("HOTAS Updater: No supported device available.");
                     }
 //                    Util.log("HOTAS Updater: waiting for notification");
                     waitForNotification();
                 }
                 catch (LibUsbException e) {
-                    Util.log("HOTAS Updater: LibUsbException! -> " + e.getMessage() + " (" + e + ")");
+                    Util.log("HOTAS Updater: LibUsbException! -> " + e.getMessage());
+                    Util.log("HOTAS Updater: device became unusable, triggering reset.");
+                    cleanupDevice();
                 }
             }
         }
@@ -232,13 +232,20 @@ public class HotasX52Daemon
             }
         }
 
-        private boolean isAvailable() {
-            return SaitekX52Pro.isAvailableProductX52();
+        private boolean isSupportedDevice() {
+            return this.device != null
+                    && this.device.getType() != null
+                    && this.device.getType() != SaitekX52Pro.Type.YOKE;
         }
 
-        private boolean isSupportedDevice() {
-            return this.device != null && this.device.getType() != null
-                    && this.device.getType() != SaitekX52Pro.Type.YOKE;
+        private void cleanupDevice() {
+            if (this.device != null) {
+                this.device.close();
+                this.device = null;
+
+                // mark state as dirty: will trigger reinitialization when device becomes available again.
+                HotasX52Daemon.this.state.reset();
+            }
         }
 
         private void setupDevice() {
