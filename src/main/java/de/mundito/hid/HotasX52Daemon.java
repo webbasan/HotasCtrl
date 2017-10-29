@@ -322,7 +322,7 @@ public class HotasX52Daemon
 
         private Parameter.ClockVariant clock;
 
-        public HotasState() {
+        HotasState() {
             this.leds = new HashMap<>();
             this.lights = new HashMap<>();
             this.textLines = new String[3];

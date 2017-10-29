@@ -1,6 +1,3 @@
-/**
- *
- */
 package de.mundito.util;
 
 import java.text.DateFormat;
@@ -9,10 +6,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * @author hweber1
- *         Project: OTC - HotasCtrl
- *         Implementor: ISB AG
- *         Create Date: 16.07.2015
+ *  webbasan, 2015-07-16
  */
 public final class Util {
 

@@ -14,7 +14,7 @@ public enum Parameter {
     LINE3("<text for line 3>", 1, false),
     CLOCK("(" + ClockVariant.getValidValueDescription() + ")", 1, true),
     CONSOLE("", 0, true),
-    HTTP_PORT("<port number", 1, true),
+    HTTP_PORT("<port number>", 1, true),
     DAEMON("", 0, true);
 
     public interface Sub {}
@@ -25,16 +25,16 @@ public enum Parameter {
         ALL;
 
         public static String getValidValueDescription() {
-            String validValues = null;
+            StringBuilder validValues = null;
             for (LightSource lightSource : LightSource.values()) {
                 if (validValues == null) {
-                    validValues = lightSource.toString().toLowerCase();
+                    validValues = new StringBuilder(lightSource.toString().toLowerCase());
                 }
                 else {
-                    validValues += "|" + lightSource.toString().toLowerCase();
+                    validValues.append("|").append(lightSource.toString().toLowerCase());
                 }
             }
-            return validValues;
+            return validValues != null ? validValues.toString() : null;
         }
     }
 
@@ -50,16 +50,16 @@ public enum Parameter {
         }
 
         public static String getValidValueDescription() {
-            String validValues = null;
+            StringBuilder validValues = null;
             for (Brightness brightness : Brightness.values()) {
                 if (validValues == null) {
-                    validValues = brightness.toString().toLowerCase();
+                    validValues = new StringBuilder(brightness.toString().toLowerCase());
                 }
                 else {
-                    validValues += "|" + brightness.toString().toLowerCase();
+                    validValues.append("|").append(brightness.toString().toLowerCase());
                 }
             }
-            return validValues;
+            return validValues != null ? validValues.toString() : null;
         }
     }
 
@@ -67,16 +67,16 @@ public enum Parameter {
         A, B, D, E, I, T1, T2, T3, POV, FIRE, THROTTLE, ALL;
 
         public static String getValidValueDescription() {
-            String validValues = null;
+            StringBuilder validValues = null;
             for (Led led : Led.values()) {
                 if (validValues == null) {
-                    validValues = led.toString().toLowerCase();
+                    validValues = new StringBuilder(led.toString().toLowerCase());
                 }
                 else {
-                    validValues += "|" + led.toString().toLowerCase();
+                    validValues.append("|").append(led.toString().toLowerCase());
                 }
             }
-            return validValues;
+            return validValues != null ? validValues.toString() : null;
         }
     }
 
@@ -84,16 +84,16 @@ public enum Parameter {
         OFF, ON, RED, AMBER, GREEN;
 
         public static String getValidValueDescription() {
-            String validValues = null;
+            StringBuilder validValues = null;
             for (LedColor ledColor : LedColor.values()) {
                 if (validValues == null) {
-                    validValues = ledColor.toString().toLowerCase();
+                    validValues = new StringBuilder(ledColor.toString().toLowerCase());
                 }
                 else {
-                    validValues += "|" + ledColor.toString().toLowerCase();
+                    validValues.append("|").append(ledColor.toString().toLowerCase());
                 }
             }
-            return validValues;
+            return validValues != null ? validValues.toString() : null;
         }
     }
 
@@ -101,16 +101,16 @@ public enum Parameter {
         LOCAL_24H, LOCAL_12H, UTC_24H, UTC_12H, GMT_24H, GMT_12H, ZULU_24H, ZULU_12H;
 
         public static String getValidValueDescription() {
-            String validValues = null;
+            StringBuilder validValues = null;
             for (ClockVariant variant : ClockVariant.values()) {
                 if (validValues == null) {
-                    validValues = variant.toString().toLowerCase();
+                    validValues = new StringBuilder(variant.toString().toLowerCase());
                 }
                 else {
-                    validValues += "|" + variant.toString().toLowerCase();
+                    validValues.append("|").append(variant.toString().toLowerCase());
                 }
             }
-            return validValues;
+            return validValues != null ? validValues.toString() : null;
         }
     }
 

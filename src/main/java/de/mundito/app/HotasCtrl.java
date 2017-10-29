@@ -121,7 +121,8 @@ public final class HotasCtrl {
             while (true) {
                 String rawInput = reader.readLine();
                 if (rawInput == null) {
-                    break; // EOF
+//                    break; // EOF // TODO: causing bail-out when using named pipes... -> use switch for fg/bg mode...
+                    continue; // EOF
                 }
                 else if (rawInput.equals("")) {
                     continue;
@@ -136,6 +137,8 @@ public final class HotasCtrl {
                     printUsage();
                 }
                 else {
+                    // TODO: would be more convenient to allow multiple commands in one line...
+                    // TODO: doesn't receive proper quoting via named pipes
                     boolean stateChanged = false;
                     try {
                         ArgHandler argHandler = ArgHandlerRegistry.readArg(rawInput.split(" ", 2));

@@ -1,9 +1,5 @@
 package de.mundito.net;
 
-/**
- * User: webbasan Date: 16.07.15 Time: 20:13
- */
-
 import de.mundito.app.HotasCtrl;
 import de.mundito.args.ArgHandler;
 import de.mundito.args.ArgHandlerRegistry;
@@ -26,6 +22,11 @@ import java.util.Date;
 import java.util.TimeZone;
 
 
+/**
+ * Simple network listener to receive configuration commands via HTTP GET requests.
+ *
+ * User: webbasan Date: 16.07.15 Time: 20:13
+ */
 public class NetServer
         implements Runnable
 {

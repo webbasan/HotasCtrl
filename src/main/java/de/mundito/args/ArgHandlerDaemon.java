@@ -17,7 +17,7 @@ public class ArgHandlerDaemon
         }
     };
 
-    protected ArgHandlerDaemon(final String... values) {
+    private ArgHandlerDaemon(final String... values) {
         super(values);
     }
 

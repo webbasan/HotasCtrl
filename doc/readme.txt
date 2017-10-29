@@ -41,7 +41,7 @@ line1,line2,line3:
 
 text:
     parameters: "<some text\nwith multiple\nlines>"
-    This allows to set multiple lines of text with in one argument.
+    This allows to set multiple lines of text with one argument call.
     The lines should be separated by the character sequence "\n".
 
 clock:

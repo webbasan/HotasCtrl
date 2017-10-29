@@ -19,7 +19,7 @@ public class ArgHandlerHttpPort
 
     private int port;
 
-    protected ArgHandlerHttpPort(final String... values) {
+    private ArgHandlerHttpPort(final String... values) {
         super(values);
     }
 
@@ -39,7 +39,7 @@ public class ArgHandlerHttpPort
 
     @Override
     public String getInvalidValueMessage() {
-        // We don't tell the user that well-known port are considered valid.
+        // We don't tell the user that even priviledged ports are considered valid.
         // If somebody uses them anyway, he hopefully knows what he's doing...
         return "Invalid value for parameter " + getParameter().name() + "."
                 + " Valid values are: -1 (:= disable http support) or a number between 1024 and 65535 (inclusive).";

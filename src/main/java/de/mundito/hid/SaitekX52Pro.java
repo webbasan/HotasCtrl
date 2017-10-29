@@ -267,8 +267,8 @@ public class SaitekX52Pro
         if (line < 1 || line > 3)
             throw new IndexOutOfBoundsException("line number out of bounds");
         int r = controlMsg(clear_idx[line], (short)0x0000);
-        if (r < 0)
-            throw new LibUsbException("setText failed to clear", r);
+//        if (r < 0)
+//            throw new LibUsbException("setText failed to clear", r);
         if (r < 0)
             throw new LibUsbException(
                     "failed at clear command: " + LibUsb.strError(r), r);
@@ -365,7 +365,7 @@ public class SaitekX52Pro
 
     private final ByteBuffer NULL = ByteBuffer.allocateDirect(0);
 
-    int controlMsg(byte index, short value)
+    private int controlMsg(byte index, short value)
     {
         return LibUsb.controlTransfer(hdl,
                 (byte)(LibUsb.REQUEST_TYPE_VENDOR | LibUsb.RECIPIENT_DEVICE | LibUsb.ENDPOINT_OUT),

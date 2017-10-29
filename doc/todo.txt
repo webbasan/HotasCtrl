@@ -6,8 +6,23 @@ M1: Java Command Line Application for the X52[pro]
     - "Get to know the territory"
     - Having tool to initially setup or change occasionally LED/Display settings
     - Initial setup of relevant project infrastructure: dependencies, build deploy, distribute
+>>> DONE. Should be considered as "Release 1.0"
+    -> TODO: update Maven version properties; there is no "deployment", so nobody will miss it...
 
 M2: "Daemon" mode (still Java based)
+    - Currently in "development" branch:
+        - Done:
+            - "Clock"
+            - "Console"
+            - generic daemon support
+        - WIP:
+            - HTTP daemon: runs and accepts basic requests; not thoroughly tested
+            - use "Console" mode with named pipes
+                - something like "echo >named_pipe 'line3 "Hello world!"'" should work...
+                - planned: dedicated tool to send commands via named pipe to "HotasCtrl Daemon"
+                - use explicit filenames instead of just redirecting stdIO handles..?
+                    -> "in" instead of stdin
+                    -> "log" instead of stdout
   - Missing Features:
     - "Marquee Effect" for long text?
     - "Date/Time" display: Host side update or missing "start trigger" on device side?

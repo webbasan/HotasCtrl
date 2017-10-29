@@ -19,7 +19,7 @@ public class ArgHandlerClock
 
     private Parameter.ClockVariant clockVariant;
 
-    protected ArgHandlerClock(final String... values) {
+    private ArgHandlerClock(final String... values) {
         super(values);
     }
 

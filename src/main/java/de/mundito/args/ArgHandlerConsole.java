@@ -17,7 +17,7 @@ public class ArgHandlerConsole
         }
     };
 
-    protected ArgHandlerConsole(final String... values) {
+    private ArgHandlerConsole(final String... values) {
         super(values);
     }
 

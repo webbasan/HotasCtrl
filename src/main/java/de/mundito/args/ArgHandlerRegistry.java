@@ -144,11 +144,11 @@ public final class ArgHandlerRegistry {
             this.index = args != null && args.length > 0 ? 0 : -1;
         }
 
-        public boolean hasNext() {
+        boolean hasNext() {
             return this.index != -1 && this.index < this.args.length;
         }
 
-        public ArgHandler next() {
+        ArgHandler next() {
             if (hasNext()) {
                 Parameter parameter = Parameter.valueOf(normalizeArgName(this.args[this.index++]));
                 ArgHandler.Factory factory = getFactory(parameter);

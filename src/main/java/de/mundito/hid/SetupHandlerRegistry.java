@@ -1,6 +1,5 @@
 package de.mundito.hid;
 
-import de.mundito.args.ArgHandler;
 import de.mundito.args.Parameter;
 
 import java.util.HashMap;
