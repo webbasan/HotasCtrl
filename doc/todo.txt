@@ -19,7 +19,7 @@ M2: "Daemon" mode (still Java based)
             - HTTP daemon: runs and accepts basic requests; not thoroughly tested
             - use "Console" mode with named pipes
                 - something like "echo >named_pipe 'line3 "Hello world!"'" should work...
-        - TODO:
+        - ToDo:
             - allow both simultanously: "console" && "http_port"
             - use explicit filenames instead of just redirecting stdIO handles..?
                 -> "in" instead of stdin

@@ -94,7 +94,7 @@ public class NetServer
                         // No REST API: GET based requests allows for undemanding clients and using path part for simplified parsing
                         // GET /light/all/on HTTP/1.0
                         // GET /led/a/red HTTP/1.0
-                        // GET /text/line1\nline2\nline3 HTTP/1.0
+                        // GET /text/line1\nline2\nline3 HTTP/1.0  // TODO: whitespace has to be quoted
                         // GET /line1/string HTTP/1.0
                         // GET /clock/local_24h HTTP/1.0
 
@@ -198,6 +198,7 @@ public class NetServer
             }
         }
         catch (Exception e) {
+            // TODO: some error situations should blame the user: 400 Bad Request
             log("Unable to handle command '" + command + "': " + e);
             // generic error (catch all to keep application running) => 500 Internal Server Error
             result = Result.INTERNAL_ERROR;

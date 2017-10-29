@@ -105,6 +105,7 @@ public final class HotasCtrl {
     }
 
     public void shutdown() {
+        // FIXME: check - unclean shutdown in named pipe setup?
         if (this.netServer != null) {
             this.netServer.shutdown();
             waitForShutdown();
