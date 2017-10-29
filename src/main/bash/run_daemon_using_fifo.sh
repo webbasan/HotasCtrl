@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Run HotasCtrl daemon in background using named pipe ("fifo") . webbasan, 2017-10-29
+# Run HotasCtrl daemon in background using named pipe ("fifo"). webbasan, 2017-10-29
 
 FIFO_NAME=/tmp/hotas.fifo       # TODO: allow overwriting from environment
 LOGFILE=hotasDaemon.log         # OS X/macOS: proper place would be something like ~/Library/Logs/HotasCtrl/hotasDaemon.log
