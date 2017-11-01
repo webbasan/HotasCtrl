@@ -18,23 +18,37 @@ M2: "Daemon" mode (still Java based)
         - WIP:
             - HTTP daemon: runs and accepts basic requests; not thoroughly tested
             - use "Console" mode with named pipes
-                - something like "echo >named_pipe 'line3 "Hello world!"'" should work...
+                - something like 'echo >named_pipe "line3 \"Hello World!\""' should work...
         - ToDo:
-            - allow both simultanously: "console" && "http_port"
+            - let App create named pipe, don't rely on user to do the house-keeping
+            - allow both simultanously: "console" && "http_port"?
             - use explicit filenames instead of just redirecting stdIO handles..?
                 -> "in" instead of stdin
                 -> "log" instead of stdout
-            - dedicated tool to send commands via named pipe to "HotasCtrl Daemon"
+            - logscan utility:
+                - find current logfile
+                - scan new entry - do something based on the findings
+            - dedicated tool to send commands via named pipe to "HotasCtrl Daemon"?
+            - setup launchagent based startup
   - Missing Features:
     - "Marquee Effect" for long text?
-    - "Date/Time" display: Host side update or missing "start trigger" on device side?
     - How to use countdown/stopwatch?
   - Goals:
     => Reduce latency when changing details
     => Allow callback from applications to change setup
     - Configuration files: different "Profiles", i.e. Application specific
     - IPC - How?:
-      - ControllerMate can make HTTP-Requests -- UPDATE:
+      - ControllerMate can make HTTP-Requests
+        -- UPDATE 2:
+            Actually, the solution is quite simple: AppleScript allows to call shell scripts directly and
+            ControllerMate's "AppleScript Building Block" allows inline Apple Scripts: No need to create one-liner
+            Apple- or shell scripts, just something like
+            > do shell script "curl http://localhost:8080/line3/Mode%20Blue"
+            So, we can use the display to set text messages on a button press. The question remains, which is more
+            useful (lower latency, less error prone, open for new fetures):
+            simple "echo >named_pipe" or "curl"/"wget" calls?
+            For now, keep the "two-headed" approach...
+        -- UPDATE 1:
             not quite correct: ControllerMate delegates request to OS, that's why Safari gets called to do the job!
             => Recommendation: use/register custom "protocol" ("hotas://"? - how much "uniqueness" is required..?)
         => REST-like API (although "GET" based...),

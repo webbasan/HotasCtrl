@@ -13,3 +13,8 @@ echo >$FIFO_NAME "led T2 amber"
 echo >$FIFO_NAME "led T3 green"
 echo >$FIFO_NAME "clock local_24h"
 echo >$FIFO_NAME "text \"Elite: Dangerous\n    Welcome\n Cmdr  Webbasan\""
+
+#> line1 "Elite: Dangerous"
+#> line2 "    Welcome"
+#> line3 " Cmdr  Webbasan"
+#> light all on led all on   ## multiple commands
