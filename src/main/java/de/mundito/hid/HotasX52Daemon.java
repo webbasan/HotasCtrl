@@ -29,7 +29,7 @@ public class HotasX52Daemon
     private Thread updaterThread;
     private ScheduledExecutorService executorService;
 
-    private boolean useExecutorForUpdate;
+    private final boolean useExecutorForUpdate;
 
     public HotasX52Daemon() {
         this.parameterMappings = new ParameterMappings();
@@ -114,7 +114,7 @@ public class HotasX52Daemon
         else {
             Util.log("enableDaemon(): Using Thread for UpdateTask");
             this.updaterThread = new Thread(this.updateTask);
-            this.updaterThread.setDaemon(true); // make sure this thread won't keep the VM running, if the main process dies.
+            this.updaterThread.setDaemon(true); // make sure this thread won't keep the VM running if the main process dies.
             this.updaterThread.start();
             Util.log("enableDaemon(): Thread started");
             Thread.yield();
@@ -443,9 +443,7 @@ public class HotasX52Daemon
             this.lights.clear();
             this.dirtyLights.clear();
 
-            for (int i = 0; i < this.textLines.length; i++) {
-                this.textLines[i] = null;
-            }
+            Arrays.fill(this.textLines, null);
             this.dirtyLines.clear();
 
             this.clock = null;

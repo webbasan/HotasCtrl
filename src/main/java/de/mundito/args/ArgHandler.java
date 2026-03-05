@@ -11,7 +11,7 @@ public abstract class ArgHandler {
     }
 
 
-    private String[] values;
+    private final String[] values;
 
     protected ArgHandler(final String... values) {
         if (values == null) {

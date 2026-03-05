@@ -64,7 +64,7 @@ public class Configuration {
     }
 
     public Hotas createHotas() {
-        // choose suitable Hotas implementation based on command arguments
+        // choose a suitable Hotas implementation based on command arguments
         if (shouldEnableDaemonMode()) {
             return new HotasX52Daemon();
         }

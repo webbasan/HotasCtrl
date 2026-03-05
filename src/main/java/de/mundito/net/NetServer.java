@@ -86,7 +86,7 @@ public class NetServer
                 boolean keepAlive = false;
 
                 for (String requestLine = reader.readLine();
-                     requestLine != null && !requestLine.equals("");
+                     requestLine != null && !requestLine.isEmpty();
                      requestLine = reader.readLine()) {
                     log("received request '" + requestLine + "'");
 
@@ -134,9 +134,9 @@ public class NetServer
 
     private boolean handleGetRequest(final BufferedReader reader, final PrintWriter writer, final String requestLine)
             throws IOException {
-        // read request header lines until empty line is found
+        // read request header lines until an empty line is found
         for (String requestHeader = reader.readLine();
-             requestHeader != null && !requestHeader.equals("");
+             requestHeader != null && !requestHeader.isEmpty();
              requestHeader = reader.readLine()) {
             log("   " + requestHeader);
 

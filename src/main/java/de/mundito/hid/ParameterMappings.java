@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class ParameterMappings {
 
-    private Map<Parameter.Sub, List<InternalValues>> paramMappings;
+    private final Map<Parameter.Sub, List<InternalValues>> paramMappings;
 
     public ParameterMappings() {
         this.paramMappings = createParamMappings();
